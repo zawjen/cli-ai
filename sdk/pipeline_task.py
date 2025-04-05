@@ -20,3 +20,6 @@ class PipelineTask(Enum):
     TEXT_TO_IMAGE = "text-to-image"
     IMAGE_TO_TEXT = "image-to-text"
     DOCUMENT_QUESTION_ANSWERING = "document-question-answering"
+
+
+

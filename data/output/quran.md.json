@@ -1,0 +1,23 @@
+{
+    "type": "text",
+    "query": "what is fascinating aspect of Quran",
+    "pipeline": {
+        "task": "question-answering",
+        "model": "distilbert-base-uncased-distilled-squad"
+    },
+    "answer": {
+        "text": "preservation and memorization",
+        "source_chunks": [
+            7,
+            3,
+            9,
+            5
+        ],
+        "source_text": [
+            "Another fascinating aspect of Quran statistics is its preservation and memorization. The Quran is considered the most memorized book in the world, with millions of people, known as Hafiz (or Hafiza for females), committing the entire book to memory. It is believed that memorizing the Quran in its entirety provides spiritual rewards and is a source of immense honor. Historically, the Quran was preserved through oral transmission, which was later compiled into written form under the Caliphate of Uthman ibn Affan, ensuring the text's uniformity and consistency across the Muslim world.",
+            "The Quran’s verses are classified into two main categories: Meccan and Medinan, referring to the periods when the verses were revealed to Prophet Muhammad (PBUH). The Meccan chapters, which are typically shorter and more poetic, focus on the core themes of Tawhid (oneness of God), the afterlife, and moral conduct. The Medinan chapters, on the other hand, are longer and deal with topics related to governance, laws, and social issues. About 86 Surahs were revealed in Mecca, while 28 were revealed in Medina. This distinction is important in understanding the evolution of the Quranic message as the Prophet’s life journey transitioned from peaceful preaching to establishing a community.",
+            "Lastly, the Quran is not only revered for its religious significance but also for its influence on various fields, including law, science, philosophy, and literature. Throughout history, the Quran has served as a guide for both personal spirituality and societal governance. Its verses have been interpreted in multiple languages, resulting in hundreds of translations that aim to bring its message to diverse cultures and communities worldwide. Despite these translations, the Quran's original Arabic remains revered, with scholars and enthusiasts continually striving to understand its deeper meanings through extensive tafsir (exegesis).",
+            "In terms of linguistic structure, the Quran is known for its unmatched eloquence, and scholars have identified a profound use of linguistic devices. For instance, the Quran contains numerous instances of rhyme, repetition, and symmetry. This is particularly evident in the way verses are constructed, as well as in the way words and letters are used in a highly calculated manner. One of the remarkable features is the frequent occurrence of certain words, such as \"Allah,\" which appears 2,698 times in various forms. This repetition serves as a reminder of God's omnipresence and dominance in all aspects of existence."
+        ]
+    }
+}

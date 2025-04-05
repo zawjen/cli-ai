@@ -19,17 +19,26 @@ class DocumentProcessor:
             self.chunks = self.chunk_text()
             self.save_chunks()
 
-        TimeLogger.log("Document processing completed", start_time)
+        TimeLogger.log("DocumentProcessor.__init__: completed", start_time)
 
 
     def load_document(self):
         """Reads the document from file."""
+
+        start_time = time.time()
+
         with open(self.doc.path, "r", encoding="utf-8") as file:
             return file.read()
+        
+        TimeLogger.log("DocumentProcessor.load_document: completed", start_time)
+        
 
 
     def chunk_text(self):
         """Splits the text into chunks based on token count."""
+
+        start_time = time.time()
+
         # Split the entire text into lines using newline character as separator
         sentences = self.text.split("\n")
         
@@ -54,16 +63,27 @@ class DocumentProcessor:
         # After loop ends, add any remaining chunk (if exists)
         if chunk:
             chunks.append(chunk.strip())
+
+        TimeLogger.log("DocumentProcessor.chunk_text: completed", start_time)
         
         # Return the list of all chunks
         return chunks
 
 
     def save_chunks(self):
+        start_time = time.time()
+
         file = PickleFile()
         file.save(self.doc.chunks_path, self.chunks)
 
+        TimeLogger.log("DocumentProcessor.save_chunks: completed", start_time)
+
+
 
     def load_chunks(self):
+        start_time = time.time()
+
         file = PickleFile()
         return file.load(self.doc.chunks_path)
+    
+        TimeLogger.log("DocumentProcessor.save_chunks: completed", start_time)

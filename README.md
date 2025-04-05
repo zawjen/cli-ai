@@ -21,14 +21,21 @@ pip install sentence-transformers faiss-cpu numpy transformers argparse torch
 
 Use following command to run application:
 
+### Reference
+
 ```sh
-python main.py --qid Q1
+python main.py [-h] [--text TEXT] [--doc DOC]
+```
+
+### Example
+```sh
+python main.py --text how many juzz are in quran --doc quran.md
 ```
 
 Or
 
 ```sh
-py main.py --qid Q1
+py main.py --text "how many juzz are in quran" --doc quran.md
 ```
 
 ## QA Model

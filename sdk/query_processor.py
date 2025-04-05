@@ -13,9 +13,8 @@ from sdk.embedding_retriever import EmbeddingRetriever
 class QueryProcessor:
     """Loads queries and extracts the required query based on QID."""
     def __init__(self, query: Query):
-        start_time = time.time()
         self.query: Query = query
-        TimeLogger.log("Query processing completed", start_time)
+
 
     def generate_answer(self):
         doc_processor = None
@@ -26,6 +25,7 @@ class QueryProcessor:
         
         # Retrieve context
         context, source_chunks = retriever.retrieve_context(self.query.text)
+
         generator = AnswerGenerator(self.query, "\n".join(context))
         
         self.query.answer.text = generator.generate_answer()

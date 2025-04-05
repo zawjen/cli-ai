@@ -11,69 +11,80 @@ from sdk.time_logger import TimeLogger
 class EmbeddingRetriever:
     """Generates embeddings and retrieves the most relevant document chunks using FAISS."""
     def __init__(self, query: Query, document_chunks: List[str]=None):
-        # Start timing the initialization process
         start_time = time.time()
                 
         self.chunks = document_chunks
         self.query = query
 
-        # Initialize the sentence transformer model with a pre-trained model
-        # all-MiniLM-L6-v2 is a lightweight model good for generating text embeddings
-        self.model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        # Use a faster model variant while maintaining quality
+        self.model = SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L3-v2")
 
         if self.query.doc.has_index:
             # Load existing FAISS index
             self.index = faiss.read_index(self.query.doc.index_path)
+            TimeLogger.log("EmbeddingRetriever.__init__: faiss.read_index completed", start_time)
         else:
-            # Convert all document chunks to embeddings using the model
-            # Store as numpy array for efficient computation
-            self.embeddings = np.array(self.model.encode(self.chunks)).astype('float32')
+            # Batch encode chunks for better performance
+            batch_size = 32
+            self.embeddings = []
+            for i in range(0, len(self.chunks), batch_size):
+                batch = self.chunks[i:i + batch_size]
+                batch_embeddings = self.model.encode(batch, convert_to_tensor=False)
+                self.embeddings.extend(batch_embeddings)
+            self.embeddings = np.array(self.embeddings).astype('float32')
 
-            # Generate embeddings and create FAISS index for similarity search
+            # Use IndexIVFFlat for faster search with large datasets
             self.index = self.create_faiss_index()
             self.save_faiss_index()
-
-        # Log the completion time of initialization
-        TimeLogger.log("Embedding generation and FAISS indexing completed", start_time)
+            TimeLogger.log("EmbeddingRetriever.__init__: Embedding generation and FAISS indexing completed", start_time)
     
 
     def create_faiss_index(self):
-        """Creates a FAISS index for efficient search."""
-        # Get the dimensionality of the embeddings
+        """Creates a FAISS index optimized for fast search."""
         dimension = self.embeddings.shape[1]
         
-        # Create a FAISS index that uses L2 (Euclidean) distance
-        index = faiss.IndexFlatL2(dimension)
+        # Number of centroids - rule of thumb is sqrt(N) where N is dataset size
+        nlist = int(np.sqrt(len(self.embeddings)))
         
-        # Add the document embeddings to the FAISS index
+        # Create quantizer
+        quantizer = faiss.IndexFlatL2(dimension)
+        
+        # Create IVF index with better search performance
+        index = faiss.IndexIVFFlat(quantizer, dimension, nlist)
+        
+        # Train the index
+        index.train(self.embeddings)
+        
+        # Add vectors to the index
         index.add(self.embeddings)
         
-        # Return the populated index
+        # Set number of probes (higher = more accurate but slower)
+        index.nprobe = 4
+        
         return index
     
 
     def retrieve_context(self, query, top_k=4):
         """Finds the most relevant chunks using FAISS."""
-        # Start timing the retrieval process
         start_time = time.time()
         
-        # Convert query to embedding and ensure correct data type
-        query_embedding = np.array(self.model.encode([query])).astype('float32')
+        # Encode query without unnecessary conversions
+        query_embedding = self.model.encode(query, convert_to_tensor=False).reshape(1, -1).astype('float32')
         
-        # Search the FAISS index for top_k most similar vectors
-        # Returns distances and indices of nearest neighbors
+        # Search index
         distances, indices = self.index.search(query_embedding, top_k)
         
-        # Log completion time of retrieval
-        TimeLogger.log("Context retrieval completed", start_time)
+        TimeLogger.log("EmbeddingRetriever.retrieve_context: Context retrieval completed", start_time)
         
-        # Handle edge case where no matches are found
         if len(indices[0]) == 0:
             return [], []
+            
+        # Use numpy operations for faster sorting
+        idx = np.argsort(distances[0])
+        sorted_indices = indices[0][idx]
         
-        # Return the matching chunks and their indices
-        # indices[0] is used because FAISS returns results in a 2D array
-        return [self.chunks[i] for i in indices[0]], indices[0].tolist()
+        # Return results
+        return [self.chunks[i] for i in sorted_indices], sorted_indices.tolist()
 
 
     def save_faiss_index(self):

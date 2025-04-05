@@ -5,6 +5,7 @@ from sdk.answer import Answer
 from sdk.doc import Doc
 from sdk.json_file import JsonFile
 from sdk.pickle_file import PickleFile
+from sdk.pipeline import Pipeline
 
 
 class QueryType(Enum):
@@ -12,9 +13,10 @@ class QueryType(Enum):
 
 
 class Query:
-    def __init__(self, text: str, doc: str):
+    def __init__(self, text: str, doc: str, pipeline: Pipeline):
         self.type = QueryType.TEXT
         self.text = text
+        self.pipeline = pipeline
         self.doc = Doc(doc)
         self.answer = Answer()
 
@@ -22,6 +24,7 @@ class Query:
         return {
             "type": "text",
             "query": self.text,
+            "pipeline": self.pipeline.to_dict(),
             "answer": self.answer.to_dict()
         }
     

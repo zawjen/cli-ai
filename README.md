@@ -2,6 +2,8 @@
 
 A CLI for Zawjen AI based Q&A. Retrieval-Augmented Generation (RAG) System.
 
+![Sample Run](./docs/sample-run.PNG)
+
 ## Setup
 
 Install the following dependencies:
